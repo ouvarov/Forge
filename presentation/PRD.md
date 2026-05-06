@@ -1,6 +1,4 @@
-# 
-
-— PRD
+# Forge — PRD
 
 > Reasoning engine для re-engagement push/email у Promova.
 > Лог → outcome → накопичений досвід → точніший наступний удар.
@@ -130,26 +128,53 @@ Forge — **HTTP call upstream від webhook step**, працює з обома
 
 ---
 
-## Economics (пілот, консервативний funnel)
+## Economics (пілот)
 
-| | Value |
+> **Чесна позиція:** 3 з 4 мультиплікаторів funnel'у — не виміряні в
+> Promova, ARPS не вдалось pull-нути з payment_analytics (timeout).
+> Тому замість single-point ROI — **range з джерелами і flagged gaps**.
+
+### Inputs (grounded research, 2026-05-06)
+
+| Input | Value | Джерело | Confidence |
+|---|---|---|---|
+| Pilot size | 7,000 push'ів | Свідомий вибір. Pool: 800K–1.2M eligible inactive learners (Walhalla `user_search` daily windows + Amplitude MAU 1.58M Apr 2026). Пілот <1% pool — не constrained | high |
+| Push CTR | 3% | Amplitude chart `m3vgeydq` "Push Opened" / event `gen_push_opened`: ~25k uniques/30d, 870–950 opens/day. Send-side rate Reteno не expose'нутий — використовуємо industry plausible 2–3% | medium |
+| Click → lesson start | 30% | Реальний funnel в Amplitude `gen_push_opened → learned lesson` 24h = **24.6%** (chartEditUrl `hflwz2m7`). Click→start вищий за open→complete → ~30% plausible | medium |
+| Activation Pattern hit (1+ lesson, 2+ days) | **20–40%** ❓ | **Метрика не вимірюється у Promova Amplitude.** Baseline відсутній — пілот сам по собі і є першим виміром. Range — assumption на основі open→complete 24h funnel | **low — найбільший gap** |
+| ARPS-delta на активацію | $4.40 ❓ | Walhalla `payment_analytics.subscription_lifecycle` — timeout, не вдалось pull-нути cleanly. Як placeholder: $30 ARPS × 14% conversion ≈ $4.20. **Unverified** | **low** |
+| Cost per push | ~0.5¢ | Sonnet 4.5 ($3/$15 per MTok) × 3000 in / 500 out = 1.65¢. Мінус ~70% з prompt caching на static-частині (voice prompt + group_stats) ≈ **0.5¢/push** | high |
+
+### Range projection (не single-point)
+
+| Сценарій | CTR | Click→start | Activation | Виручка | Витрати | **ROI** |
+|---|---|---|---|---|---|---|
+| **Pessimistic** | 3% | 30% | 20% | $55 | $35 | **1.6x** |
+| **Mid** | 3% | 30% | 30% | $83 | $35 | **2.4x** |
+| **Upper** | 3% | 30% | 40% | $111 | $35 | **3.2x** |
+
+ARPS = $4.40 у всіх сценаріях (placeholder). Якщо реальна ARPS у ±50% —
+вся таблиця пропорційно зміщується.
+
+### Break-even
+
+$35 cost / $4.40 ARPS = **8 активацій з 7,000 push'ів = 0.11% activation lift**.
+Floor'и попередніх org-експериментів: **+13% / +33% / +41% CTR**.
+Break-even **на два порядки нижче** floor → пілот не критичний по даунсайду
+навіть у pessimistic-сценарії.
+
+### Sensitivity
+
+| Що змінилось | ROI (mid → ?) |
 |---|---|
-| Push'ів | 7,000 |
-| CTR | 3% (нижче за broadcast baseline) |
-| Кліків | 210 |
-| Lesson start (50% з кліку) | 105 |
-| Activation Pattern hit (40%) | 42 |
-| ARPS-дельта на активацію | $4.40 |
-| **Виручка** | **$185** |
-| **Витрати (LLM + infra)** | **$28** |
-| **ROI** | **6.6x** |
+| CTR 1% (worst plausible) | mid → **0.8x** ❌ |
+| ARPS −50% ($2.20) | mid → **1.2x** |
+| Activation 10% (нижче за pessimistic) | mid → **0.8x** ❌ |
+| ARPS +50% ($6.60) | mid → **3.6x** |
 
-**Cost per push (prod):** ~0.4¢ (HTTP pull + Anthropic SDK).
-
-**Break-even:** 0.1% activation lift (7 активацій з 7к). На два порядки
-нижче за floor +13%, який ми вже бʼємо.
-
-**Sensitivity:** на 1% CTR (worst plausible) ROI = **2.2x**.
+Справжній ризик-light: **CTR <2%** або **Activation <15%** — будь-яке з
+двох спускає mid нижче break-even. Pilot — це і є тест саме цих двох
+параметрів.
 
 ### Revenue funnel — паралельна ROI-доріжка
 

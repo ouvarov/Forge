@@ -4,7 +4,7 @@
 
 Built for the Promova Product Engineer Challenge, May 5–6, 2026.
 
-> **Status (2026-05-04):** scaffolding complete, MCP surface live (1 working tool + 3 stubs + 5 prompts). Core service bodies pending. See [PLAN.md §11](./PLAN.md#11-поточний-статус-live) for the live file-by-file checklist.
+> **Status (2026-05-06):** MCP surface live (6 tools + 5 prompts), Postgres schema migrated, admin UI on `localhost:5174`. Pilot-ready. See [`presentation/PRD.md`](./presentation/PRD.md) for the full product spec.
 
 ---
 
@@ -195,11 +195,8 @@ To add a new product: implement `DomainAdapter`, register in `AdaptersModule`. ~
 
 | File | Purpose |
 |---|---|
-| [`PLAN.md`](./PLAN.md) | Execution plan — what we build, in what order, with what API |
-| [`WHY.md`](./WHY.md) | Business case — real Slack citations, real numbers, why now |
-| [`DEMO.md`](./DEMO.md) | 15-minute demo script — 8-step learning loop, speaker notes |
-| [`RESEARCH.md`](./RESEARCH.md) | Production scaling — how forge gives each user a personal push at scale (cost, infra, fatigue) |
-| [`ANALYTICS.md`](./ANALYTICS.md) | Event taxonomy + A/B framework — how we prove forge is better than baseline pushes |
+| [`presentation/PRD.md`](./presentation/PRD.md) | Product spec — problem, hypothesis, how it works, economics (grounded), differentiation, production readiness |
+| [`presentation/SCRIPT.md`](./presentation/SCRIPT.md) | Demo speaker notes |
 
 ---
 
