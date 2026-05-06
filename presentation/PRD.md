@@ -120,21 +120,34 @@ win-rate per behavioral cohort.
 | **Пам'ять** | CTR-leaderboard шаблонів | Send-time | **Win-rate per 5-dim group_key** |
 | **Категорія** | Variant generator | Authoring helper | **Reasoning over outcomes** |
 | **Output** | Push в Reteno | Push в CIO | **JSON → будь-який CRM** |
-| **Apliฟt в Promova** | Не дав апліфту | Не тестовано | **Pilot: 5–7 хвиль** |
+| **Layer** | Copy variants (CTR-driven) | Authoring helper | **Behavioral cohort reasoning** |
 
-Reteno не дав апліфту бо оптимізував не той сигнал (CTR per кампанія, без
-behavioral context). Customer.io — це template helpers всередині CRM.
-Forge — **HTTP call upstream від webhook step**, працює з обома.
+Reteno оптимізує копії — у своєму public case study (травень 2025) заявляє
++82.3% CTR / +68.1% CVR на Promova. Це не суперечить Forge: вони працюють
+на шарі **варіантів копії**, Forge — на шарі **поведінкових когорт**.
+Customer.io AI (per public docs, May 2026) — template helpers для
+маркетолога. Forge — **HTTP call upstream від webhook step**, працює
+з обома, не замінює.
 
 ---
 
-## Economics (пілот)
+## Economics — pilot як free option
 
-> **Чесна позиція:** 3 з 4 мультиплікаторів funnel'у — не виміряні в
-> Promova, ARPS не вдалось pull-нути з payment_analytics (timeout).
-> Тому замість single-point ROI — **range з джерелами і flagged gaps**.
+> **Принципова чесність:** цифри нижче — це **org baseline** для будь-якого
+> re-engagement push'а у Promova, **не Forge-specific lift**. Forge у це
+> рівняння **не додає ні одного множника**. Reteno зашле ті ж 7к — отримає
+> ті ж ~3% CTR і ~30% click→start, бо це rates після клика, push-source-agnostic.
+>
+> **Що цей розрахунок насправді показує:** downside floor. Навіть якщо
+> Forge не додає **нічого** над broadcast — пілот не втрачає гроші.
+> ROI 1.6x–3.2x — це floor, не projection.
+>
+> **Реальний Forge value-add** (lift над broadcast завдяки cohort memory) —
+> **це primary signal пілоту**. Org precedents (+41% AI push, +58% Learning
+> Buddy, +33% welcome, +86% mini-wins) дають floor expectation що lift буде
+> ненульовим, але цифру замірюємо у trajectory, а не пишемо до експерименту.
 
-### Inputs (grounded research, 2026-05-06)
+### Inputs — org baseline (grounded research, 2026-05-06)
 
 | Input | Value | Джерело | Confidence |
 |---|---|---|---|
@@ -145,16 +158,19 @@ Forge — **HTTP call upstream від webhook step**, працює з обома
 | ARPS-delta на активацію | $4.40 ❓ | Walhalla `payment_analytics.subscription_lifecycle` — timeout, не вдалось pull-нути cleanly. Як placeholder: $30 ARPS × 14% conversion ≈ $4.20. **Unverified** | **low** |
 | Cost per push | ~0.5¢ | Sonnet 4.5 ($3/$15 per MTok) × 3000 in / 500 out = 1.65¢. Мінус ~70% з prompt caching на static-частині (voice prompt + group_stats) ≈ **0.5¢/push** | high |
 
-### Range projection (не single-point)
+### Downside scenarios (pilot з ZERO Forge lift)
 
-| Сценарій | CTR | Click→start | Activation | Виручка | Витрати | **ROI** |
-|---|---|---|---|---|---|---|
-| **Pessimistic** | 3% | 30% | 20% | $55 | $35 | **1.6x** |
-| **Mid** | 3% | 30% | 30% | $83 | $35 | **2.4x** |
-| **Upper** | 3% | 30% | 40% | $111 | $35 | **3.2x** |
+| Activation rate | Виручка | Витрати | **ROI** | Notes |
+|---|---|---|---|---|
+| 20% (broadcast floor) | $55 | $35 | **1.6x** | без жодного Forge contribution |
+| 30% (mid baseline) | $83 | $35 | **2.4x** | без жодного Forge contribution |
+| 40% (upper baseline) | $111 | $35 | **3.2x** | без жодного Forge contribution |
 
-ARPS = $4.40 у всіх сценаріях (placeholder). Якщо реальна ARPS у ±50% —
-вся таблиця пропорційно зміщується.
+**Жоден сценарій не втрачає гроші.** Це і є «free option».
+Forge upside — окремий шар, мірятимемо trajectory у пілоті.
+
+ARPS = $4.40 placeholder. Якщо реальна ARPS у ±50% — таблиця пропорційно
+зміщується.
 
 ### Break-even
 
@@ -163,18 +179,33 @@ Floor'и попередніх org-експериментів: **+13% / +33% / +4
 Break-even **на два порядки нижче** floor → пілот не критичний по даунсайду
 навіть у pessimistic-сценарії.
 
+### Forge upside — окремий шар
+
+Над цим baseline'ом Forge **повинен** додати lift через cohort memory +
+cited reasoning. Цифру до пілоту не пишемо — буде trajectory сигнал.
+Floor expectation — що-небудь з org precedents:
+
+| Org precedent | Lift |
+|---|---|
+| AI brand voice push (Veronika) | **+41% CTR** |
+| Learning Buddy MVP (iOS A/B) | **+58.8% Trial→Pay** |
+| Welcome flow персоналізація | **+33% CTR** |
+| Mini-wins motivation | **+86% start уроку** |
+
+**Реальний Forge contribution** = (Forge attempt activation rate)
+− (broadcast control activation rate), вимірюється у Phase 2 (A/B vs baseline).
+
 ### Sensitivity
 
 | Що змінилось | ROI (mid → ?) |
 |---|---|
 | CTR 1% (worst plausible) | mid → **0.8x** ❌ |
 | ARPS −50% ($2.20) | mid → **1.2x** |
-| Activation 10% (нижче за pessimistic) | mid → **0.8x** ❌ |
+| Activation 10% (нижче за пес-сценарій) | mid → **0.8x** ❌ |
 | ARPS +50% ($6.60) | mid → **3.6x** |
 
-Справжній ризик-light: **CTR <2%** або **Activation <15%** — будь-яке з
-двох спускає mid нижче break-even. Pilot — це і є тест саме цих двох
-параметрів.
+Stop-light: якщо org baseline rates деградують нижче історичного floor
+(CTR <2% або activation <15%) — break-even ламається.
 
 ### Revenue funnel — паралельна ROI-доріжка
 
