@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.venv/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Env / secrets
+.env
+.env.example
+.env.local
+.env.*.local
+
+# Local data
+postgres-data/
+scripts/walhalla-data/
+
+# IDE
+.idea/
+.vscode/
+.claude/
+
+# OS
+.DS_Store
+*.log
+
+# Source — repo holds docs only
+src/
+scripts/
+presentation/assets/
+presentation/forge.pptx
+presentation/build.py
+
+# Tooling configs
+nest-cli.json
+tsconfig*.json
+drizzle.config.ts
+docker-compose.yml
+init.sql
+package.json
+yarn.lock
+.eslintrc.js
+.prettierrc
+
+# Claude project guide — internal
+CLAUDE.md
